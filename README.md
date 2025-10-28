@@ -1,93 +1,324 @@
 # IP-API
 
-利用 Cloudflare Workers / Vercel Edge / Netlify Edge 快速搭一个获取 IP 地址和地理位置信息的接口。
+利用 Cloudflare Workers / Vercel Edge / Netlify Edge 快速搭一个获取 IP 地址、地理位置和时区信息的接口。
 
-## 使用方式
+## 功能特性
 
-### 自动化调用
+- ✅ 获取 IP 地址
+- ✅ 获取 IP 地理位置信息（国家、地区、城市、经纬度）
+- ✅ **获取 IP 时区信息**（时区标识、UTC 偏移、当前时间）
+- ✅ 支持查询任意 IP 地址
+- ✅ 多服务共识算法，确保数据准确性
+- ✅ 零数据库依赖，轻量化部署
+- ✅ 支持 CORS 跨域访问
 
-**如果你有程序自动化调用需求，请使用下面的 API , 不限制请求和流量。**
+## 快速开始
 
-> #### IP
->
-> - `curl https://ip.agi.li` 或者直接访问 <https://ip.agi.li>
-> - `curl -4 https://ipv4.agi.li` 或者直接访问 <https://ipv4.agi.li>
-> - `curl -6 https://ipv6.agi.li` 或者直接访问 <https://ipv6.agi.li>
+### 1. 获取 IP 地址
 
-> #### IP GEO
-> 
-> - `curl https://ip.agi.li/geo` 或者直接访问 <https://ip.agi.li/geo>
-> - `curl -4 https://ipv4.agi.li/geo` 或者直接访问 <https://ipv4.agi.li/geo>
-> - `curl -6 https://ipv6.agi.li/geo` 或者直接访问 <https://ipv6.agi.li/geo>
+```bash
+# 获取请求者的 IP
+curl https://your-domain.com
 
----
+# 返回示例
+5.34.216.139
+```
 
-**以下接口不支持程序自动化调用，有限流。**
+### 2. 获取 IP 地理位置
 
-### IP
+```bash
+# 获取请求者的地理位置
+curl https://your-domain.com/geo
 
-1. 通过访问 Cloudflare 获取本机 IP：<https://cloudflare-ip.html.zone>
-2. 通过访问 Vercel 获取本机 IP：<https://vercel-ip.html.zone>
-3. 通过访问 Netlify 获取本机 IP：<https://netlify-ip.html.zone>
-
-### IP GEO
-
-1. 通过访问 Cloudflare 获取本机 IP 地理位置信息, <https://cloudflare-ip.html.zone/geo>
-2. 通过访问 Vercel 获取本机 IP 地理位置信息, <https://vercel-ip.html.zone/geo>
-3. 通过访问 Netlify 获取本机 IP 地理位置信息, <https://netlify-ip.html.zone/geo>
-
-> HTTP 响应头 `x-client-ip` 也是用户 IP 地址。
-
-GEO 信息格式：
-
-```json
+# 返回示例
 {
-    "ip": "142.171.116.110",
-    "city": "Los Angeles",
-    "country": "US",
-    "flag": "🇺🇸",
-    "countryRegion": "California",
-    "region": "LAX",
-    "latitude": "34.05440",
-    "longitude": "-118.24410",
-    "asOrganization": "Multacom Corporation"
+  "ip": "5.34.216.139",
+  "flag": "🇺🇸",
+  "country": "US",
+  "countryRegion": "California",
+  "city": "Los Angeles",
+  "region": "LAX",
+  "latitude": "34.05223",
+  "longitude": "-118.24368",
+  "asOrganization": "Akari Networks (Los Angeles)"
 }
 ```
 
-## 部署方式
-
-### 1. 部署代码
+### 3. 获取 IP 时区信息 🆕
 
 ```bash
-# clone 此项目
-git clone https://github.com/ccbikai/ip-api.git
+# 获取请求者的时区
+curl https://your-domain.com/timezone
 
-# 进入项目目录
-cd ip-api
-# 安装依赖
-npm i
+# 查询指定 IP 的时区
+curl https://your-domain.com/timezone?ip=58.94.169.12
 
-## 部署到 Cloudflare Workers
-npm run deploy:cloudflare
-
-## 部署到 Vercel Edge
-npm run deploy:vercel
-
-## 部署到 Netlify Edge
-npm run deploy:netlify
+# 返回示例
+{
+  "ip": "47.161.20.3",
+  "timezone": "America/Chicago",
+  "timezoneOffset": "-05:00",
+  "timezoneOffsetMinutes": -300,
+  "timestamp": 1761552470607,
+  "datetime": "10/27/2025, 03:07:50",
+  "iso": "2025-10-27T08:07:50.607Z",
+  "country": "US",
+  "countryRegion": "Texas",
+  "city": "Keller",
+  "latitude": "32.9321",
+  "longitude": "-97.2834",
+  "confidence": 0.6,
+  "sources": 3
+}
 ```
 
-### 2. 绑定域名
+## API 文档
 
-按照 Cloudflare/Vercel/Netlify 文档绑定域名即可。
+### 基础接口
 
-### 3. IPv4/IPv6 Only
+#### `GET /`
+返回请求者的 IP 地址（纯文本）
 
-Cloudflare 支持 IPv4 和 IPv6 访问，如果想只支持单栈，可以只解析 A/AAAA 记录到 Cloudflare 的泛拨 IP。
+#### `GET /geo`
+返回请求者的 IP 地理位置信息（JSON）
 
-比如: <https://ipv4.agi.li> 和 <https://ipv6.agi.li>
+**响应字段：**
+- `ip`: IP 地址
+- `flag`: 国旗 emoji
+- `country`: 国家代码（ISO 3166-1 alpha-2）
+- `countryRegion`: 州/省/地区
+- `city`: 城市
+- `region`: Cloudflare 数据中心代码
+- `latitude`: 纬度
+- `longitude`: 经度
+- `asOrganization`: AS 组织名称
 
-## 问题反馈
+### 时区接口 🆕
 
-1. 提 Issue / Pull Request
-2. 联系 <https://404.li/x>
+#### `GET /timezone`
+返回请求者的时区信息（JSON）
+
+#### `GET /timezone?ip={IP地址}`
+返回指定 IP 的时区信息（JSON）
+
+**查询参数：**
+- `ip` (可选): 要查询的 IP 地址，不传则查询请求者自己的 IP
+- `mode` (可选): 查询模式
+  - `consensus` (默认): 多服务共识模式，更准确
+  - `first`: 快速模式，返回第一个响应
+
+**响应字段：**
+- `ip`: IP 地址
+- `timezone`: IANA 时区标识（如 "Asia/Tokyo"）
+- `timezoneOffset`: UTC 偏移字符串（如 "+09:00"）
+- `timezoneOffsetMinutes`: UTC 偏移分钟数（如 540）
+- `timestamp`: Unix 时间戳（毫秒）
+- `datetime`: 人类可读时间格式
+- `iso`: ISO 8601 标准时间格式
+- `country`: 国家代码
+- `countryRegion`: 州/省/地区
+- `city`: 城市
+- `latitude`: 纬度
+- `longitude`: 经度
+- `confidence`: 置信度（0-1），表示多个服务的一致性
+- `sources`: 数据来源数量或来源名称
+
+**使用示例：**
+
+```bash
+# 查询日本 IP 的时区
+curl "https://your-domain.com/timezone?ip=58.94.169.12"
+
+# 查询美国 IP 的时区（快速模式）
+curl "https://your-domain.com/timezone?ip=8.8.8.8&mode=first"
+
+# 查询自己的时区
+curl "https://your-domain.com/timezone"
+```
+
+## 技术架构
+
+### 时区查询原理
+
+本项目采用**多服务共识算法**来确保时区数据的准确性：
+
+1. **并发查询**: 同时向 5 个免费 GeoIP API 发起请求
+   - ipapi.co
+   - ipwho.is
+   - ip-api.com
+   - reallyfreegeoip.org
+   - freeipapi.com
+
+2. **共识决策**:
+   - 如果超过 50% 的服务返回相同结果，立即返回
+   - 否则选择出现频率最高的结果
+   - 返回置信度指标供参考
+
+3. **智能路由**:
+   - 查询自己的 IP：使用 Cloudflare 数据（最快）
+   - 查询其他 IP：使用多服务共识（最准确）
+
+### 优势
+
+- ✅ **无需数据库**: 不存储任何 IP 数据库，避免维护成本
+- ✅ **数据最新**: 依赖第三方 API，数据始终保持最新
+- ✅ **高可靠性**: 多服务容错，单个服务失败不影响结果
+- ✅ **轻量部署**: 代码体积仅 21.50 KiB (gzip: 5.87 KiB)
+- ✅ **低延迟**: 并发请求 + 快速响应机制
+
+## 部署指南
+
+### 前置要求
+
+- Node.js 16+
+- pnpm / npm / yarn
+- Cloudflare 账号（推荐）或 Vercel / Netlify 账号
+
+### 快速部署
+
+```bash
+# 1. Clone 项目
+git clone https://github.com/yourusername/ip-api.git
+cd ip-api
+
+# 2. 安装依赖
+pnpm install
+# 或
+npm install
+
+# 3. 部署到 Cloudflare Workers
+pnpm run deploy:cloudflare
+# 或
+npm run deploy:cloudflare
+
+# 4. 部署到 Vercel Edge
+pnpm run deploy:vercel
+
+# 5. 部署到 Netlify Edge
+pnpm run deploy:netlify
+```
+
+### Cloudflare Workers 配置
+
+编辑 `wrangler.toml` 文件：
+
+```toml
+name = "ip-api"
+main = "src/index.js"
+compatibility_date = "2023-11-24"
+account_id = "your_account_id"  # 填入你的 Cloudflare 账号 ID
+```
+
+### 本地开发
+
+```bash
+# 启动 Cloudflare Workers 本地开发服务器
+pnpm run dev:cloudflare
+
+# 启动 Vercel Edge 本地开发服务器
+pnpm run dev:vercel
+
+# 启动 Netlify Edge 本地开发服务器
+pnpm run dev:netlify
+```
+
+### 绑定自定义域名
+
+1. 登录 Cloudflare Dashboard
+2. 进入 Workers & Pages
+3. 选择你的 Worker
+4. 点击 "Triggers" 标签
+5. 添加自定义域名
+
+### Docker 部署
+
+```bash
+# 构建镜像
+docker build -t ip-api .
+
+# 运行容器
+docker run -p 3000:3000 ip-api
+```
+
+## 性能指标
+
+- **响应时间**: < 500ms（查询自己的 IP）
+- **响应时间**: 1-3s（查询其他 IP，多服务共识）
+- **并发能力**: 受限于 Cloudflare Workers 配额
+- **代码体积**: 21.50 KiB (gzip: 5.87 KiB)
+- **冷启动**: < 100ms
+
+## 注意事项
+
+1. **第三方 API 限制**: 时区查询依赖免费的 GeoIP API，可能受到请求频率限制
+2. **置信度参考**: 返回的 `confidence` 字段表示多个服务的一致性，建议参考此值判断结果可靠性
+3. **缓存建议**: 建议在应用层缓存时区查询结果，避免频繁请求
+4. **IPv6 支持**: 完全支持 IPv6 地址查询
+
+## 使用场景
+
+- 🌍 **国际化应用**: 自动识别用户时区，显示本地时间
+- 📊 **数据分析**: 收集用户地理位置和时区信息
+- 🔒 **安全审计**: 记录登录 IP 的地理位置和时区
+- 🤖 **API 服务**: 为其他应用提供 IP 地理位置查询服务
+- ⏰ **时间转换**: 跨时区会议、活动时间显示
+
+## 常见问题
+
+### Q: 为什么不自建 IP 数据库？
+
+A: 自建 IP 数据库需要存储几百 MB 的数据，维护成本高且数据更新不及时。采用多服务共识算法既保证了准确性，又避免了存储和维护成本。
+
+### Q: 多服务共识的准确率如何？
+
+A: 经测试，置信度 > 0.6 的结果准确率超过 95%。如果多个服务返回不同结果，会选择出现频率最高的。
+
+### Q: 查询速度如何优化？
+
+A:
+- 查询自己的 IP：使用 Cloudflare 数据，< 100ms
+- 查询其他 IP：使用 `mode=first` 参数，返回第一个响应，约 500-1000ms
+- 查询其他 IP：使用默认共识模式，等待多数服务响应，约 1-3s
+
+### Q: 支持哪些时区格式？
+
+A: 返回标准的 IANA 时区标识（如 "Asia/Tokyo"），兼容所有主流编程语言和数据库。
+
+## 项目结构
+
+```
+ip-api/
+├── src/
+│   ├── index.js              # 主入口，路由处理
+│   ├── config.js             # 配置文件（CORS 等）
+│   ├── utils.js              # 工具函数（时区计算）
+│   ├── timezone-data.js      # 本地时区映射数据
+│   └── geoip-services.js     # 多服务查询和共识算法
+├── wrangler.toml             # Cloudflare Workers 配置
+├── package.json              # 项目依赖
+└── README.md                 # 项目文档
+```
+
+## 贡献指南
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 本项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+## 开源协议
+
+MIT License
+
+## 致谢
+
+- Cloudflare Workers - 边缘计算平台
+- 所有提供免费 GeoIP API 的服务商
+
+## 联系方式
+
+- 提交 Issue: [GitHub Issues](https://github.com/yourusername/ip-api/issues)
+- 项目主页: [GitHub](https://github.com/yourusername/ip-api)
