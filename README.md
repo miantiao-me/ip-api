@@ -4,17 +4,37 @@
 
 ## 使用方式
 
+### 自动化调用
+
+**如果你有程序自动化调用需求，请使用下面的 API , 不限制请求和流量。**
+
+> #### IP
+>
+> - `curl https://ip.agi.li` 或者直接访问 <https://ip.agi.li>
+> - `curl -4 https://ipv4.agi.li` 或者直接访问 <https://ipv4.agi.li>
+> - `curl -6 https://ipv6.agi.li` 或者直接访问 <https://ipv6.agi.li>
+
+> #### IP GEO
+> 
+> - `curl https://ip.agi.li/geo` 或者直接访问 <https://ip.agi.li/geo>
+> - `curl -4 https://ipv4.agi.li/geo` 或者直接访问 <https://ipv4.agi.li/geo>
+> - `curl -6 https://ipv6.agi.li/geo` 或者直接访问 <https://ipv6.agi.li/geo>
+
+---
+
+**以下接口不支持程序自动化调用，有限流。**
+
 ### IP
 
-1. 通过访问 Cloudflare 获取本机 IP： `curl https://cloudflare-ip.html.zone/` 或者直接访问 <https://cloudflare-ip.html.zone/>
-2. 通过访问 Vercel 获取本机 IP： `curl https://vercel-ip.html.zone/` 或者直接访问 <https://vercel-ip.html.zone/>
-3. 通过访问 Netlify 获取本机 IP： `curl https://netlify-ip.html.zone/` 或者直接访问 <https://netlify-ip.html.zone/>
+1. 通过访问 Cloudflare 获取本机 IP：<https://cloudflare-ip.html.zone>
+2. 通过访问 Vercel 获取本机 IP：<https://vercel-ip.html.zone>
+3. 通过访问 Netlify 获取本机 IP：<https://netlify-ip.html.zone>
 
 ### IP GEO
 
-1. 通过访问 Cloudflare 获取本机 IP 地理位置信息, `curl https://cloudflare-ip.html.zone/geo` 或者直接访问 <https://cloudflare-ip.html.zone/geo>
-2. 通过访问 Vercel 获取本机 IP 地理位置信息, `curl https://vercel-ip.html.zone/geo` 或者直接访问 <https://vercel-ip.html.zone/geo>
-3. 通过访问 Netlify 获取本机 IP 地理位置信息, `curl https://netlify-ip.html.zone/geo` 或者直接访问 <https://netlify-ip.html.zone/geo>
+1. 通过访问 Cloudflare 获取本机 IP 地理位置信息, <https://cloudflare-ip.html.zone/geo>
+2. 通过访问 Vercel 获取本机 IP 地理位置信息, <https://vercel-ip.html.zone/geo>
+3. 通过访问 Netlify 获取本机 IP 地理位置信息, <https://netlify-ip.html.zone/geo>
 
 > HTTP 响应头 `x-client-ip` 也是用户 IP 地址。
 
@@ -65,5 +85,4 @@ npm run deploy:netlify
 
 Cloudflare 支持 IPv4 和 IPv6 访问，如果想只支持单栈，可以只解析 A/AAAA 记录到 Cloudflare 的泛拨 IP。
 
-比如: <https://cloudflare-ip-v4.html.zone/> 和 <http://cloudflare-ip-v6.html.zone/>
-
+比如: <https://ipv4.agi.li> 和 <https://ipv6.agi.li>
