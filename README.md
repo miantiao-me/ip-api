@@ -77,6 +77,21 @@ npm run deploy:vercel
 npm run deploy:netlify
 ```
 
+### Docker
+
+构建并启动服务（默认端口 `3000`）：
+
+```bash
+docker build -t ip-api .
+docker run --rm -p 3000:3000 ip-api
+# 自定义容器监听端口
+# docker run --rm -e PORT=8080 -p 8080:8080 ip-api
+```
+
+服务监听 `0.0.0.0`，可通过 `PORT` 修改端口；客户端 IP 需由可信反向代理通过请求头提供，优先级为 `cf-connecting-ipv6`、`cf-connecting-ip`、`x-real-ip`。
+
+`/geo` 从代理请求头读取地理信息：`cf-ipcountry`、`cf-region`、`cf-ipcity`、`cf-ray`、`cf-iplatitude`、`cf-iplongitude`、`x-asn`。
+
 ### 2. 绑定域名
 
 按照 Cloudflare/Vercel/Netlify 文档绑定域名即可。

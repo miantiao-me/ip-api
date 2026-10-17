@@ -148,3 +148,8 @@ dist
 
 # Local Netlify folder
 .netlify
+
+# scriptc compiler artifacts
+.scriptc/
+/ip-api
+/ip-api.*

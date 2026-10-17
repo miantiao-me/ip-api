@@ -13,3 +13,6 @@ helm-charts
 .editorconfig
 .idea
 coverage*
+.scriptc
+ip-api
+ip-api.*
